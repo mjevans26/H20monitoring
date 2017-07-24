@@ -53,7 +53,7 @@ portal_raw$Area <- sapply(1:nrow(portal_raw), function(i){
 portal_raw$pMine <- portal_raw$Mined/portal_raw$Area
 
 #convert all concentration values to ug/l
-portal_raw$Values <- test<- sapply(1:nrow(portal_raw), function(i){
+portal_raw$Values <- sapply(1:nrow(portal_raw), function(i){
   if(portal_raw$ResultMeasure.MeasureUnitCode[i] == "mg/l"){
     ug <- portal_raw$ResultMeasureValue[i] * 1000
   }else if (portal_raw$ResultMeasure.MeasureUnitCode[i] == "ng/l"){
@@ -63,6 +63,23 @@ portal_raw$Values <- test<- sapply(1:nrow(portal_raw), function(i){
   }
   return(ug)
 }, USE.NAMES = FALSE)
+
+portal_raw$Values <- sapply(1:nrow(portal_raw), function(i){
+  if(portal_raw$ResultMeasure.MeasureUnitCode[i] == "mg/l"){
+    ug <- portal_raw$ResultMeasureValue[i] * 1000
+  }else if (portal_raw$ResultMeasure.MeasureUnitCode[i] == "ng/l"){
+    ug <- portal_raw$ResultMeasureValue[i] * 0.001
+  }else if (portal_raw$ResultMeasure.MeasureUnitCode[i] == "ppm"){
+    ug <- portal_raw$ResultMeasureValue[i] * 1000
+  }else if (portal_raw$ResultMeasure.MeasureUnitCode[i] == "mg/kg"){
+    ug <- portal_raw$ResultMeasureValue[i] * 1000
+  }else {
+    ug <- portal_raw$ResultMeasureValue[i]
+  }
+  return(ug)
+}, USE.NAMES = FALSE)
+
+
 
 #create counts of stations
 site_counts <- group_by(portal_raw, MonitoringLocationIdentifier, ActivityStartDate)%>%

@@ -43,5 +43,16 @@ time_plot <- function(character, measure, min){
               hoverinfo = "text")
 }
 
-lmer(data = portal_raw[portal_raw$MonitoringLocationIdentifier %in% sites$MonitoringLocationIdentifier[sites$count > 10],], 
-     ResultMeasureValue ~ 1|MonitoringLocationIdentifier + pMine + HydrologicCondition)
+
+make_df <- function(measure, type, count){
+  sts <- sites$MonitoringLocationIdentifier[sites$count > count]
+  df <- dplyr::filter(portal_raw, CharacteristicName == measure,
+              ResultSampleFractionText == type,
+              MonitoringLocationIdentifier %in% sts)
+  return(df)
+}
+
+summary(
+  lmer(data = make_df("Copper", "Dissolved", 10), 
+     lgValues ~ (1|MonitoringLocationIdentifier) + pMine)
+)
