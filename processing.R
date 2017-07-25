@@ -86,3 +86,10 @@ site_counts <- group_by(portal_raw, MonitoringLocationIdentifier, ActivityStartD
   group_by(MonitoringLocationIdentifier)%>%summarise(count = n())
 
 sites <- merge(sites, site_counts, by = "MonitoringLocationIdentifier", all = TRUE)
+
+distances <- read.csv("distances.csv", header = TRUE)
+temp <- merge(join_data, distances[,2:4], by.x = c("FID", "GRIDCODE"), by.y = c("NEAR_FID", "IN_FID"))
+temp <- sapply(1:nrow(join_data), function(i){
+  dist <- distances$NEAR_DIST[distances$IN_FID == join_data$FID[i] & distances$NEAR_FID == join_data$TARGET_FID[i]]
+  return(dist)
+}, USE.NAMES = FALSE)
