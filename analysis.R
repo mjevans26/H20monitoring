@@ -56,3 +56,7 @@ summary(
   lmer(data = make_df("Copper", "Dissolved", 10), 
      lgValues ~ (1|MonitoringLocationIdentifier) + pMine)
 )
+
+#Equation from USGS for estimating conentration attenuation as a fxn of time and discharge (Q):
+# c = 857*Time ^(-0.760*((Q/Qa)^-0.079)) where Qa is annual mean discharge.
+#USGS fit two lines with Q/Qa = 1, representing "High" flow, and Q/Qa = 0.2 representing "Low" flow.

@@ -14,7 +14,7 @@ min(as.numeric(portal_raw$ResultMeasureValue[portal_raw$CharactersitcName == "Ca
 #result of spatial join in arc between mining footprints and monitoring site catchment basins.
 #contains all combinations of mining footprints and sampling site basins
 
-join_data <- read.csv("Footprint_Sites_Join.csv", header = TRUE, sep = ",")
+join_data <- read.csv("Join_Data.csv", header = TRUE, sep = ",")
 #erroneously assigned GRIDCODE == 0 due to duplicated site basins from watershed trials
 join_data$GRIDCODE[join_data$FID %in% c(31959, 35869, 39753, 43368, 47150, 51059, 54844, 54849)] <- 639
 join_data$DATE <- as.Date(as.character(join_data$YEAR), format = "%Y")
@@ -88,8 +88,4 @@ site_counts <- group_by(portal_raw, MonitoringLocationIdentifier, ActivityStartD
 sites <- merge(sites, site_counts, by = "MonitoringLocationIdentifier", all = TRUE)
 
 distances <- read.csv("distances.csv", header = TRUE)
-temp <- merge(join_data, distances[,2:4], by.x = c("FID", "GRIDCODE"), by.y = c("NEAR_FID", "IN_FID"))
-temp <- sapply(1:nrow(join_data), function(i){
-  dist <- distances$NEAR_DIST[distances$IN_FID == join_data$FID[i] & distances$NEAR_FID == join_data$TARGET_FID[i]]
-  return(dist)
-}, USE.NAMES = FALSE)
+join_data <- merge(join_data, distances[,2:4], by.x = c("FID", "GRIDCODE"), by.y = c("NEAR_FID", "IN_FID"))
