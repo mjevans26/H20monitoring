@@ -21,7 +21,8 @@ join_data$DATE <- as.Date(as.character(join_data$YEAR), format = "%Y")
 site_areas <- group_by(join_data, YEAR, GRIDCODE, STATION_ID)%>%
   summarise(DATE = first(DATE), MINED = sum(SUM), ORG = first(ORG), NAME = first(NAME))
 
-
+temp <- group_by(join_data, YEAR, GRIDCODE, STATION_ID)%>%
+  summarise(MINED_ADJ = sum(ADJ_SUM))
 
 #match the area of mining activities within a sampling site's basin for the appropriate year, 
 #based on when the sample was taken
@@ -89,3 +90,8 @@ sites <- merge(sites, site_counts, by = "MonitoringLocationIdentifier", all = TR
 
 distances <- read.csv("distances.csv", header = TRUE)
 join_data <- merge(join_data, distances[,2:4], by.x = c("FID", "GRIDCODE"), by.y = c("NEAR_FID", "IN_FID"))
+#replace distances below ten with 10
+join_data$ADJ_DIST_H <- 857*(join_data$NEAR_DIST ^(-0.760*(1^-0.079)))
+join_data$ADJ_DIST_L <- 857*(join_data$NEAR_DIST ^(-0.760*(0.2^-0.079)))
+join_data$ADJ_DIST <- ifelse(join_data$NEAR_DIST < 10, (0.01^-0.887)/60, ((join_data$NEAR_DIST/1000)^-0.887)/60)
+join_data$ADJ_SUM <- join_data$SUM * join_data$ADJ_DIST
